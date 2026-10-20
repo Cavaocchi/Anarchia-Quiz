@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Che tipo di anarchico/a sei? — quiz di orientamento</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#E4DDD0;
+    --paper-light:#F4EEE2;
+    --ink:#1B1916;
+    --red:#B7282E;
+    --khaki:#6B6B47;
+    --gold:#C99A3E;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    background-image:radial-gradient(rgba(27,25,22,0.04) 1px,transparent 1px);
+    background-size:4px 4px;
+    color:var(--ink);
+    font-family:'IBM Plex Mono',monospace;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+  .wrap{max-width:640px;margin:0 auto;padding:26px 16px 80px;}
+  .eyebrow{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--khaki);font-weight:600;margin-bottom:6px;text-align:center;}
+  h1.title{font-family:'Anton',sans-serif;font-weight:400;text-transform:uppercase;letter-spacing:1px;font-size:clamp(28px,7vw,46px);line-height:0.94;text-align:center;margin:0 0 6px;}
+  .title .accent{color:var(--red);}
+  .subtitle{text-align:center;font-size:13px;color:var(--ink);opacity:.75;max-width:480px;margin:0 auto 26px;line-height:1.55;}
+  .seal{display:block;margin:0 auto 14px;}
+  .intro-card{background:var(--paper-light);border:2px solid var(--ink);padding:24px 20px;position:relative;}
+  .intro-card p{font-size:13.5px;line-height:1.72;margin:0 0 14px;}
+  .intro-card p:last-of-type{margin-bottom:20px;}
+  .stamp-corner{position:absolute;top:-12px;right:-10px;background:var(--red);color:var(--paper-light);font-family:'Anton',sans-serif;font-size:11px;letter-spacing:2px;padding:6px 10px;transform:rotate(6deg);box-shadow:2px 2px 0 var(--ink);}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--ink);color:var(--paper-light);font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:13px;letter-spacing:1.5px;text-transform:uppercase;border:2px solid var(--ink);padding:13px 22px;cursor:pointer;width:100%;transition:transform .12s ease,background .12s ease;}
+  .btn:hover{background:var(--red);border-color:var(--red);}
+  .btn:active{transform:translateY(1px);}
+  .btn:focus-visible{outline:3px solid var(--gold);outline-offset:2px;}
+  .btn-ghost{background:transparent;color:var(--ink);width:auto;padding:10px 16px;font-size:12px;}
+  .btn-ghost:hover{background:var(--ink);color:var(--paper-light);}
+  .progress-row{display:flex;align-items:center;gap:10px;margin-bottom:18px;}
+  .progress-label{font-size:11px;letter-spacing:1.5px;white-space:nowrap;font-weight:600;}
+  .ticket{flex:1;display:flex;gap:2px;}
+  .tick{flex:1;height:8px;background:rgba(27,25,22,.12);border:1px solid rgba(27,25,22,.25);}
+  .tick.filled{background:var(--red);border-color:var(--red);}
+  .qcard{background:var(--paper-light);border:2px solid var(--ink);padding:22px 18px 16px;position:relative;}
+  .qnum{position:absolute;top:-13px;left:16px;background:var(--ink);color:var(--paper-light);font-family:'Anton',sans-serif;font-size:13px;padding:3px 10px;}
+  .qtext{font-family:'Anton',sans-serif;font-weight:400;text-transform:uppercase;font-size:clamp(16px,4vw,20px);line-height:1.18;letter-spacing:.3px;margin:10px 0 16px;}
+  .opt{display:flex;align-items:flex-start;gap:11px;width:100%;text-align:left;background:transparent;border:1.5px solid rgba(27,25,22,.28);border-left:4px solid rgba(27,25,22,.28);padding:10px 11px;margin-bottom:7px;font-family:'IBM Plex Mono',monospace;font-size:12.8px;line-height:1.42;color:var(--ink);cursor:pointer;transition:background .12s ease,border-color .12s ease;}
+  .opt:hover{background:rgba(183,40,46,.06);border-color:var(--red);border-left-color:var(--red);}
+  .opt:focus-visible{outline:3px solid var(--gold);outline-offset:1px;}
+  .opt.selected{background:rgba(183,40,46,.1);border-color:var(--red);border-left-color:var(--red);}
+  .opt-idx{flex:none;width:18px;height:18px;border-radius:50%;border:1.5px solid var(--khaki);font-size:10px;font-weight:600;display:flex;align-items:center;justify-content:center;color:var(--khaki);}
+  .opt.selected .opt-idx{background:var(--red);border-color:var(--red);color:var(--paper-light);}
+  .nav-row{display:flex;justify-content:space-between;align-items:center;margin-top:14px;}
+  .fade-in{animation:fadeIn .28s ease both;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+  .result-hero{text-align:center;margin:6px 0 24px;}
+  .stamp-wrap{display:flex;justify-content:center;margin-bottom:10px;}
+  .result-name{font-family:'Anton',sans-serif;text-transform:uppercase;font-size:clamp(20px,5.5vw,30px);line-height:1;margin:12px 0 6px;}
+  .result-tagline{font-size:12.5px;color:var(--khaki);margin-bottom:14px;}
+  .result-desc{font-size:13.5px;line-height:1.76;max-width:510px;margin:0 auto 6px;text-align:left;}
+  .bars{margin-top:28px;}
+  .bars-title{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--khaki);font-weight:600;margin-bottom:12px;}
+  .bar-row{margin-bottom:14px;}
+  .bar-row summary{list-style:none;cursor:pointer;}
+  .bar-row summary::-webkit-details-marker{display:none;}
+  .bar-top{display:flex;justify-content:space-between;align-items:baseline;font-size:12.5px;margin-bottom:5px;font-weight:600;}
+  .bar-track{height:14px;background:rgba(27,25,22,.08);border:1px solid rgba(27,25,22,.25);}
+  .bar-fill{height:100%;background:var(--red);}
+  .bar-desc{font-size:12.5px;line-height:1.6;padding:10px 2px 2px;opacity:.85;}
+  .disclaimer{font-size:11px;color:var(--khaki);text-align:center;line-height:1.65;margin-top:32px;padding-top:16px;border-top:1px dashed rgba(27,25,22,.3);}
+  .hidden{display:none!important;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <svg class="seal" width="54" height="54" viewBox="0 0 56 56">
+    <circle cx="28" cy="28" r="25" fill="none" stroke="var(--ink)" stroke-width="2.5"/>
+    <circle cx="28" cy="28" r="18" fill="none" stroke="var(--ink)" stroke-width="1"/>
+    <text x="28" y="33" text-anchor="middle" font-family="Anton" font-size="18" fill="var(--red)">A</text>
+  </svg>
+
+  <div class="eyebrow">30 domande · 6 correnti anarchiche</div>
+  <h1 class="title">Che tipo di <span class="accent">Anarchico/a</span> sei?</h1>
+  <p class="subtitle">Un orientamento tra sei tradizioni dell'anarchismo: anarco-collettivismo, anarchismo filosofico, anarco-individualismo, anarco-capitalismo, anarco-primitivismo, anarchismo spirituale.</p>
+
+  <div id="screen-intro">
+    <div class="intro-card">
+      <div class="stamp-corner">non&nbsp;scientifico</div>
+      <p>Per ogni domanda troverai sei risposte, una per ciascuna corrente. Scegli quella che più si avvicina alla tua posizione. Se nessuna ti calza perfettamente, scegli la meno lontana: conta la tendenza, non la formula esatta.</p>
+      <p>Le sei correnti sono qui trattate come famiglie ideologiche ampie — dentro "anarco-collettivismo" ci stanno anarco-comunismo, anarco-sindacalismo, neozapatismo e Rojava; dentro "anarchismo filosofico" ci sta anche il transumanesimo anarchico, e così via. I risultati sono scritti in prima persona, dal punto di vista di ciascuna corrente, come narrazioni politiche interne, non come giudizi storici neutri.</p>
+      <button class="btn" onclick="startQuiz()">Inizia il quiz →</button>
+    </div>
+  </div>
+
+  <div id="screen-quiz" class="hidden">
+    <div class="progress-row">
+      <span class="progress-label" id="progress-label">01 / 30</span>
+      <div class="ticket" id="ticket"></div>
+    </div>
+    <div class="qcard fade-in" id="qcard">
+      <span class="qnum" id="qnum">01</span>
+      <div class="qtext" id="qtext"></div>
+      <div id="opts"></div>
+    </div>
+    <div class="nav-row">
+      <button class="btn btn-ghost" id="backBtn" onclick="goBack()">← Indietro</button>
+      <span style="font-size:11px;color:var(--khaki);">tocca una risposta per proseguire</span>
+    </div>
+  </div>
+
+  <div id="screen-results" class="hidden fade-in">
+    <div class="result-hero" id="result-hero"></div>
+    <div class="bars">
+      <div class="bars-title">Mappa completa delle affinità</div>
+      <div id="bars-list"></div>
+    </div>
+    <button class="btn" style="margin-top:22px;" onclick="restartQuiz()">↺ Ricomincia il quiz</button>
+    <div class="disclaimer">L'indice (0–100) misura la vicinanza relativa a ciascuna corrente in base alle risposte date, non una percentuale di "appartenenza". Le sei correnti semplificano famiglie ideologiche molto più ricche e composite; le descrizioni finali sono scritte in prima persona nel tono retorico di ciascuna tradizione.</div>
+  </div>
+
+</div>
+<script>
+/* ================================================================
+   CATEGORIE — ordine "a ruota" per prossimità ideologica:
+   AC-AF-AI-AK-AP-AS
+   Coppie opposte: AC<->AK, AF<->AP, AI<->AS
+   ================================================================ */
+const CATS = ["AC","AF","AI","AK","AP","AS"];
+
+const ICONS = {
+AC:`<path d="M78,70 C97,67 101,42 88,26 C95,38 92,57 77,63 C79,65 79,68 78,70 Z" fill="var(--red)"/>
+  <ellipse cx="58" cy="66" rx="25" ry="15" fill="var(--red)"/>
+  <circle cx="27" cy="48" r="13" fill="var(--red)"/>
+  <polygon points="16,40 20,23 28,42" fill="var(--red)"/>
+  <polygon points="25,42 35,25 39,43" fill="var(--red)"/>
+  <polygon points="11,49 16,46 16,53" fill="var(--red)"/>
+  <rect x="40" y="78" width="6" height="13" rx="2" fill="var(--red)"/>
+  <rect x="54" y="80" width="6" height="11" rx="2" fill="var(--red)"/>
+  <rect x="68" y="78" width="6" height="13" rx="2" fill="var(--red)"/>`,
+AF:`<line x1="50" y1="14" x2="18" y2="52" stroke="var(--red)" stroke-width="3.5"/>
+  <line x1="50" y1="14" x2="82" y2="52" stroke="var(--red)" stroke-width="3.5"/>
+  <line x1="18" y1="52" x2="82" y2="52" stroke="var(--red)" stroke-width="3.5"/>
+  <line x1="18" y1="52" x2="33" y2="86" stroke="var(--red)" stroke-width="3.5"/>
+  <line x1="82" y1="52" x2="67" y2="86" stroke="var(--red)" stroke-width="3.5"/>
+  <line x1="33" y1="86" x2="67" y2="86" stroke="var(--red)" stroke-width="3.5"/>
+  <line x1="50" y1="14" x2="33" y2="86" stroke="var(--red)" stroke-width="1.8"/>
+  <line x1="50" y1="14" x2="67" y2="86" stroke="var(--red)" stroke-width="1.8"/>
+  <circle cx="50" cy="14" r="7" fill="var(--red)"/>
+  <circle cx="18" cy="52" r="7" fill="var(--red)"/>
+  <circle cx="82" cy="52" r="7" fill="var(--red)"/>
+  <circle cx="33" cy="86" r="7" fill="var(--red)"/>
+  <circle cx="67" cy="86" r="7" fill="var(--red)"/>`,
+AI:`<circle cx="60" cy="19" r="9" fill="var(--red)"/>
+  <path d="M56,29 L48,58" stroke="var(--red)" stroke-width="6.5" stroke-linecap="round" fill="none"/>
+  <path d="M52,35 L30,24" stroke="var(--red)" stroke-width="6.5" stroke-linecap="round" fill="none"/>
+  <path d="M52,38 L72,46" stroke="var(--red)" stroke-width="6.5" stroke-linecap="round" fill="none"/>
+  <path d="M48,58 L31,88" stroke="var(--red)" stroke-width="6.5" stroke-linecap="round" fill="none"/>
+  <path d="M48,58 L60,72 L52,90" stroke="var(--red)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>`,
+AK:`<circle cx="50" cy="50" r="40" fill="none" stroke="var(--red)" stroke-width="5.5"/>
+  <text x="50" y="68" text-anchor="middle" font-family="Georgia,serif" font-size="50" font-weight="bold" fill="var(--red)">$</text>`,
+AP:`<rect x="44" y="58" width="12" height="34" rx="2" fill="var(--red)"/>
+  <polygon points="50,8 20,62 80,62" fill="var(--red)"/>
+  <polygon points="50,24 23,68 77,68" fill="var(--red)"/>
+  <polygon points="50,36 26,72 74,72" fill="var(--red)"/>
+  <path d="M44,92 C36,87 24,93 26,100" stroke="var(--red)" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <path d="M56,92 C64,87 76,93 74,100" stroke="var(--red)" stroke-width="4" fill="none" stroke-linecap="round"/>`,
+AS:`<ellipse cx="50" cy="68" rx="24" ry="20" fill="var(--red)"/>
+  <rect x="17" y="46" width="9" height="26" rx="4" fill="var(--red)"/>
+  <rect x="28" y="33" width="9" height="37" rx="4" fill="var(--red)"/>
+  <rect x="41" y="26" width="9" height="42" rx="4" fill="var(--red)"/>
+  <rect x="53" y="30" width="9" height="38" rx="4" fill="var(--red)"/>
+  <rect x="65" y="42" width="9" height="28" rx="4" fill="var(--red)"/>
+  <ellipse cx="50" cy="68" rx="11" ry="7.5" fill="var(--paper-light)"/>
+  <circle cx="50" cy="68" r="4.5" fill="var(--red)"/>
+  <circle cx="50" cy="68" r="2" fill="var(--paper-light)"/>`
+};
+
+const CAT_INFO = {
+AC:{
+  name:"Anarco-collettivismo",
+  tagline:"Il gatto nero della rivoluzione sociale",
+  desc:`Crediamo che la libertà non sia un fatto individuale ma una conquista collettiva. Il capitalismo e lo Stato non sono separati: si sostengono a vicenda, si rinforzano, proteggono i ricchi dai poveri e i forti dai deboli. Per questo non basta rifiutarli dentro la propria testa — bisogna smontarli pezzo per pezzo, con le lotte dei lavoratori e delle lavoratrici nei sindacati e nelle fabbriche, con le assemblee di quartiere, con le milizie femminili, con i collettivi queer, con le reti di mutuo aiuto che costruiscono già ora il mondo che vogliamo domani. Siamo eredi della CNT-FAI spagnola, di Makhno in Ucraina, della Comune di Parigi, dello zapatismo, del Rojava: tradizioni diverse accomunate da un'unica intuizione — che le persone possono organizzarsi senza padroni e senza capi, che la cooperazione è più potente della competizione, che un'altra vita è possibile già adesso se si ha il coraggio di costruirla insieme. Il nostro anarchismo è materialista, anticapitalista, ecologista, transfemminista, antifascista: non un'estetica né una filosofia da salotto, ma una pratica quotidiana di resistenza e di costruzione.`
+},
+AF:{
+  name:"Anarchismo filosofico",
+  tagline:"L'universo stesso è anarchico",
+  desc:`L'anarchia non è solo una proposta politica: è la struttura profonda della realtà. La teoria dei sistemi complessi ce lo conferma: strutture articolate emergono senza coordinatori centralizzati, attraverso interazioni locali che generano comportamenti collettivi che nessun singolo componente ha pianificato né diretto. Questa è la nostra premessa ontologica: an-arché, la negazione di ogni archè, di ogni principio ordinante imposto dall'esterno, di ogni telos trascendente. Un immanentismo naturalista radicale che vede l'universo stesso come un caos non-casuale governato da leggi precise che emergono direttamente dalla materia stessa, un infinito intreccio di relazioni.<br><br>E se la realtà funziona così, anche la società umana funzionerebbe meglio organizzandosi in modo analogo: decentrata, plurale, capace di autoregolazione dal basso. La conseguenza politica è perciò una posizione libertaria, democratica e socialista, che lotta per una società di eguali fondata su libertà tanto individuali quanto collettive, liberata dalle gerarchie artificiali dello Stato e del capitale. La sua realizzazione economica concreta è il controllo sociale dei mezzi di produzione, la partecipazione democratica diffusa: un ecosistema condiviso e decentralizzato.<br><br>Non siamo necessariamente contro ogni mediazione istituzionale temporanea: siamo pragmatici. Se un percorso riformista o parlamentare avvicina concretamente il mondo a questo orizzonte, non lo escludiamo. Ma il nostro punto d'arrivo resta quello di una democrazia radicale, emergente, senza gerarchie permanenti, come la natura stessa ci insegna da sempre che è possibile, e auspicabile.`
+},
+AI:{
+  name:"Anarco-individualismo",
+  tagline:"Io sono la mia unica legge",
+  desc:`Non appartengo a nessun collettivo che non abbia scelto io, non obbedisco a nessuna regola che non mi sia data io, non combatto per nessuna causa più grande di me stesso. Questa non è arroganza: è la logica di chi ha preso sul serio il problema del potere e ha realizzato che il primo mattone su cui si fonda ogni dominio è la tua disponibilità a obbedire, a farti ingabbiare in un'identità, in un ruolo, in una missione collettiva scelta da altri. Sono nichilista per metodo, non per rassegnazione: nessun valore mi precede, nessuna morale mi è dovuta, nessuna organizzazione merita la mia fedeltà assoluta. Mi unisco ad altri quando i nostri interessi coincidono — nella rivolta, nell'illegalismo, nell'autogestione di un momento — e mi separo quando smettono di farlo. La mia etica è egoista nel senso stirneriano del termine: parte sempre dalla mia volontà e dal mio desiderio, non da un'astrazione chiamata Bene Comune. Non mi interessa necessariamente costruire il mondo nuovo: mi interessa vivere nel mio modo in questo, costi quel che costi.`
+},
+AK:{
+  name:"Anarco-capitalismo",
+  tagline:"Il mercato libero è la vera libertà",
+  desc:`Tutto il male del mondo proviene da un'unica fonte: il monopolio della forza esercitato dallo Stato. Senza Stato non ci sarebbero guerre su larga scala, grandi monopoli, sussidi alle corporations, regolamentazioni che soffocano la concorrenza, sistemi scolastici e sanitari inefficienti e costosi. Il libero mercato — quello vero, senza interferenze statali — è l'unico meccanismo capace di coordinare miliardi di scelte individuali in modo efficiente, pacifico e rispettoso della libertà di ognuno. La proprietà privata non è furto: è il frutto del lavoro e dell'iniziativa individuale, e difenderla non è egoismo ma il fondamento di ogni altra libertà possibile. Siamo anarchici perché vogliamo l'assenza totale di governo, non la sua sostituzione con un collettivo altrettanto coercitivo che ci dice come produrre, come consumare, come vivere. Il mercato, non l'assemblea, è la vera democrazia diretta — ogni transazione è un voto, ogni prezzo è un'informazione, nessuno decide per tutti.`
+},
+AP:{
+  name:"Anarco-primitivismo",
+  tagline:"Torniamo alla vita autentica",
+  desc:`La rivoluzione industriale non è stata una liberazione: è stato il peccato originale da cui discende tutto il resto — lo sfruttamento capitalistico, la devastazione ecologica, l'alienazione psicologica di massa, la perdita di senso e di comunità reale. Prima di essa, gli esseri umani vivevano in piccoli gruppi, lavoravano poche ore al giorno, erano in contatto con la terra, con i ritmi stagionali, con le altre specie animali. Non era un paradiso — ma era vita autentica, non mediata da macchine, da algoritmi, da gerarchie burocratiche, da schermi. Il nostro progetto non è riformare la civiltà industriale né modernizzarla con qualche pannello solare sopra: è abbandonarla. Costruire — o unirsi a — comunità piccole, autonome, radicalmente decentrate, che vivono di caccia, raccolta, agricoltura di piccola scala, artigianato. Più è piccolo il gruppo, più le gerarchie scompaiono da sole — senza bisogno di teoremi anarchici né di rivoluzioni politiche. La tecnologia non è neutrale: è il meccanismo del dominio, e rinunciarvi non è povertà ma ritrovamento.`
+},
+AS:{
+  name:"Anarchismo spirituale",
+  tagline:"La rivoluzione comincia dall'anima",
+  desc:`La nostra rivoluzione comincia nell'anima, non in piazza. Non perché la piazza non conti — la fronteggiamo, la amiamo, ci siamo — ma perché nessuna struttura esterna cambia davvero se prima non cambia la coscienza di chi la abita. Lo Stato, la Chiesa, il Patriarcato, il Mercato: sono tutti nomi di una stessa paura interiore — la paura della vita senza padroni, del corpo senza controllo, della comunità senza gerarchia. Siamo in guerra con tutti loro, e lo siamo con gentilezza, con ira sacra, con rituali e con sabotaggio. Siamo queer, transfemministe, sciamane, pagane, mistiche senza dogma e senza prete. Il nostro anarchismo non è un programma: è un allineamento — con la terra, con gli spiriti degli antenati, con il corpo che respira e che sente, con la vita nella sua forma più concreta e più sacra. Ogni cerimonia è un atto politico. Ogni guarigione comunitaria è un atto rivoluzionario. Ogni volta che onoriamo il vivente contro le logiche della morte, costruiamo il mondo che vogliamo.`
+}
+};
+
+const MATRIX = [
+  [  12,   5,  -5, -12,  -5,   5], // AC
+  [   5,  12,   5,  -5, -12,  -5], // AF
+  [  -5,   5,  12,   5,  -5, -12], // AI
+  [ -12,  -5,   5,  12,   5,  -5], // AK
+  [  -5, -12,  -5,   5,  12,   5], // AP
+  [   5,  -5, -12,  -5,   5,  12]  // AS
+];
+const MAXPOINT = 12;
+
+/* ================================================================
+   30 DOMANDE — 6 opzioni in ordine: AC, AF, AI, AK, AP, AS
+   ================================================================ */
+const QUESTIONS = [
+{q:"Perché abolire lo Stato?",o:[
+  "Perché è lo strumento principale dell'oppressione di classe, da smantellare costruendo istituzioni cooperative che lo sostituiscano",
+  "Perché è una struttura gerarchica artificiale incompatibile con la natura emergente e relazionale di ogni sistema complesso",
+  "Perché comprime la libertà del singolo individuo, obbligandolo a regole che non ha scelto né può rifiutare senza subire violenza",
+  "Perché impedisce il funzionamento del libero mercato, unico meccanismo capace di coordinare le persone senza coercizione",
+  "Perché è il motore dell'industrializzazione e del dominio tecnologico sulla natura: la sua fine è anche quella della civiltà industriale",
+  "Perché opprime l'anima e lo spirito collettivo, insieme alla Chiesa e a tutte le altre istituzioni del potere e del controllo"
+]},
+{q:"Che cos'è la proprietà privata?",o:[
+  "Il furto che ci viene presentato come diritto naturale: va abolita per i mezzi di produzione, lasciando il possesso personale",
+  "Un'illusione filosofica: i confini tra me e il mondo sono costruzioni artificiali, non dati naturali",
+  "Un diritto assoluto su ciò che ho conquistato con le mie forze, prodotto o acquistato liberamente da un altro individuo",
+  "Il fondamento di ogni libertà: la difendo contro chiunque tenti di toglierla, Stato o collettivo che sia",
+  "Una violenza contro la terra, che non può essere posseduta né ceduta perché appartiene a tutti i viventi",
+  "Un attaccamento che allontana dall'energia viva del mondo e dai legami di cura autentici"
+]},
+{q:"Come vedi la tecnologia moderna?",o:[
+  "Uno strumento da mettere sotto controllo collettivo dei lavoratori, strappandolo al profitto privato",
+  "Una forma di emergenza evolutiva che può emanciparci se la guidiamo con consapevolezza etica",
+  "La uso liberamente per i miei scopi quando mi serve, senza darle un valore morale in sé",
+  "L'innovazione tecnologica del mercato libero è il motore del progresso: lo Stato non deve interferire",
+  "La radice del dominio capitalistico e statale sulla natura e sull'uomo: va abbandonata, non riformata",
+  "Fredda, vuota, nemica del mistero: preferisco i saperi ancestrali, il corpo, la vita lenta"
+]},
+{q:"Come ti organizzi politicamente?",o:[
+  "In sindacati, assemblee, collettivi e reti federate orizzontalmente per lottare e costruire insieme",
+  "In reti fluide che cambiano forma secondo le esigenze, fuori da strutture permanenti e burocratiche",
+  "Non mi organizzo: agisco da solo o con persone scelte liberamente, mai con masse o strutture formali",
+  "Attraverso associazioni volontarie di difesa della proprietà, senza partiti né stati né sindacati",
+  "In piccole comunità intenzionali fuori dalla società industriale, legate al territorio",
+  "In cerchi rituali, gruppi di affinità spirituale, reti transfemministe e queer di cura reciproca"
+]},
+{q:"Che rapporto hai con il capitalismo?",o:[
+  "È il nemico principale: va abbattuto tramite la lotta operaia e la costruzione di alternative collettive",
+  "È una gerarchia artificiale incompatibile con la natura relazionale della realtà: va dissolto",
+  "Lo sprezzo come sistema, ma il vero problema è lo Stato che lo distorce e lo protegge dai suoi concorrenti",
+  "Il capitalismo libero, senza intervento statale, è la soluzione: il capitalismo regolato è il problema",
+  "È il culmine malato dell'industrializzazione: ha distrutto la terra, le comunità e il corpo umano",
+  "Un sistema di morte spirituale che mercifica tutto ciò che è sacro, dalla vita al corpo alla cura"
+]},
+{q:"Cosa pensi della violenza come tattica politica?",o:[
+  "Autodifesa collettiva legittima, dentro una strategia più ampia di costruzione e lotta dal basso",
+  "Strumento da valutare pragmaticamente secondo le circostanze: spesso controproducente, mai assoluta",
+  "Può essere necessaria, legittima e persino estetica come espressione della rivolta individuale",
+  "Accettabile solo in autodifesa della proprietà: mai come iniziativa aggressiva verso altri",
+  "In genere rifiutata: preferisco la fuga dalla civiltà e la costruzione altrove alla guerra contro di essa",
+  "Pacifismo come vocazione spirituale: la violenza inquina lo spazio sacro e i legami tra viventi"
+]},
+{q:"Come vedi la natura?",o:[
+  "Un bene comune da proteggere attraverso la lotta ecologista e la gestione collettiva democratica",
+  "La realtà stessa nella sua infinita complessità relazionale, di cui siamo parte integrante e non padroni",
+  "Una forza indifferente con cui sono in rapporto personale e diretto, fuori da schemi ideologici",
+  "Una risorsa che il libero mercato dei diritti di proprietà gestirebbe meglio di qualsiasi Stato o collettivo",
+  "La nostra casa originaria da cui ci siamo esiliati con l'agricoltura intensiva, l'industria, la città",
+  "Entità vivente, sede di spiriti e forze ancestrali con cui dobbiamo riallinearci attivamente"
+]},
+{q:"Che cosa pensi della scienza moderna?",o:[
+  "Strumento prezioso ma da democratizzare e liberare dagli interessi del capitale e del militare",
+  "Il migliore metodo conoscitivo che abbiamo: da espandere verso la complessità, i sistemi emergenti, la coscienza",
+  "Una costruzione umana come un'altra: utile per me, ma non mi vincola epistemicamente né eticamente",
+  "Il motore del progresso tecnologico che il mercato libero finanzia meglio di qualsiasi istituzione pubblica",
+  "Spesso complice dell'industrialismo: ha distrutto saperi ancestrali e reso il mondo misurabile ma povero",
+  "Necessaria ma incompleta: esistono realtà che sfuggono alla misura, al laboratorio, al metodo"
+]},
+{q:"Che idea hai di comunità?",o:[
+  "La base organizzativa della lotta: assemblee, case del popolo, quartieri autorganizzati e interconnessi",
+  "Un sistema emergente complesso: funziona meglio più è plurale, decentrato e capace di adattarsi",
+  "Un'associazione volontaria di individui che si scelgono liberamente, scioglibile in qualsiasi momento",
+  "Un contratto volontario tra persone che difendono i propri interessi e la propria proprietà reciprocamente",
+  "Un gruppo piccolo, radicato in un territorio specifico, che vive dei ritmi della natura e delle stagioni",
+  "Un cerchio di persone legate da affinità spirituale, da pratiche di cura e di guarigione condivise"
+]},
+{q:"Genere, sessualità e corpo: come stai su questi temi?",o:[
+  "Il transfemminismo queer è parte integrante della lotta anarchica contro ogni dominio e gerarchia",
+  "Il genere è una costruzione sociale da decostruire: la fluidità è parte della natura complessa dell'essere",
+  "Affare mio: faccio ciò che voglio con il mio corpo senza render conto a nessun collettivo o ideologia",
+  "Ogni adulto consenziente può fare ciò che vuole: non è affare dello Stato né di nessun altro",
+  "Le comunità pre-civilizzazione avevano strutture spesso più egalitarie e matriarcali di quelle attuali",
+  "Il genere è fluido come le energie: queer è lo Spirito, la rivoluzione è anche sessuale e cosmica"
+]},
+{q:"Che cosa pensi del lavoro salariato?",o:[
+  "È sfruttamento organizzato: va abolito sostituendolo con lavoro autorganizzato e cooperativo",
+  "È una costruzione storica che può essere gradualmente trasformata verso forme più orizzontali",
+  "Rifiuto il lavoro salariato quando posso: lavoro per me e per i miei scopi, non per padroni o collettivi",
+  "È un contratto volontario tra parti: il problema è quando lo Stato lo distorce con leggi e sindacati",
+  "È alienazione pura: i nostri antenati lavoravano poche ore al giorno, senza padroni, senza orologi",
+  "Alienazione dell'anima: il vero lavoro è la cura di sé, degli altri e della terra che ci ospita"
+]},
+{q:"Che idea hai dell'educazione?",o:[
+  "Scuole libertarie autogestite, pedagogie critiche e antiautoritarie contro l'indottrinamento capitalista",
+  "Apprendimento aperto e plurale, fondato sulla curiosità, sull'errore e sulle reti di sapere collettivo",
+  "Mi educo da solo: l'autoformazione è l'unica educazione autentica, il resto è addestramento",
+  "Il mercato privato dell'istruzione produce le scuole migliori, senza il monopolio statale",
+  "Apprendimento pratico in comunità: imparare a costruire, coltivare, cacciare, guarire, navigare",
+  "Tramandare saperi ancestrali, rituali, pratiche di cura dell'anima e di connessione con la natura"
+]},
+{q:"Come stai rispetto alla religione?",o:[
+  "L'anticlericale classico: la Chiesa è un baluardo del potere, va combattuta insieme allo Stato",
+  "Le tradizioni religiose sono narrazioni umane sull'infinito: meritano analisi critica, non devozione",
+  "Non rispondo a nessun dio né a nessuna chiesa: la mia spiritualità, se esiste, è solo mia",
+  "Ogni persona ha il diritto di credere in ciò che vuole, purché non violi la proprietà altrui",
+  "Le religioni istituzionalizzate hanno tradito il sacro originario: meglio lo sciamanesimo animista",
+  "In guerra con la Chiesa come con ogni prete: la spiritualità vera non ha gerarchia né intermediari"
+]},
+{q:"Come immagini la giustizia senza Stato?",o:[
+  "Giustizia trasformativa e riparativa, gestita dalla comunità con principi egualitari e inclusivi",
+  "Sistemi auto-organizzati di risoluzione dei conflitti, emergenti dalla struttura della rete sociale",
+  "Giustizia personale: non delego né la mia vendetta né la mia riconciliazione a nessun organo esterno",
+  "Arbitrato privato e agenzie di difesa della proprietà che sostituiscono tribunali e polizia statale",
+  "La giustizia delle piccole comunità dove tutti si conoscono: la scala riduce i conflitti strutturalmente",
+  "Riparazione spirituale, cerchi di guarigione, giustizia che passa per la coscienza e non per la forza"
+]},
+{q:"Che rapporto hai con la città moderna?",o:[
+  "Spazio da occupare e trasformare: centri sociali, orti urbani, case del popolo autogestite",
+  "Nodo di complessità: può essere riprogettata su principi emergenti e orizzontali dal basso",
+  "Sopravvivo in città per conto mio, fuori dalle sue istituzioni e dalle sue aspettative sociali",
+  "La città prospera con il libero mercato immobiliare e la libertà di contratto: il problema è la zonazione statale",
+  "Un errore storico da abbandonare: torno alla terra, alle foreste, alla vita rurale e selvatica",
+  "Spazio alienante: cerco angoli sacri, giardini nascosti, comunità spirituali anche in contesto urbano"
+]},
+{q:"Cosa fai con denaro e scambio economico?",o:[
+  "Costruisco economie alternative: cooperative, monete locali, banche del tempo, reti di mutuo aiuto",
+  "Lo strumento monetario può essere riprogettato verso reti di scambio equo e non estrattivo",
+  "Lo uso per sopravvivenza e libertà personale, senza illusioni né sensi di colpa altruistici",
+  "La moneta libera, non emessa dallo Stato, è il fondamento dell'economia sana e volontaria",
+  "Evito il denaro quando posso: baratto, dono, raccolta diretta dalla natura, autosufficienza",
+  "Dono libero e economia della cura: la ricchezza vera non si misura in denaro ma in relazioni vive"
+]},
+{q:"Come guardi alla storia della civiltà umana?",o:[
+  "Una storia di lotte di classe e dominio, ma anche di resistenze, rivolte e costruzioni emancipatrici",
+  "Un'evoluzione complessa, né progressiva né regressiva: piena di biforcazioni, emergenze e rischi",
+  "Una lunga storia di oppressione organizzata che ha sempre cercato di schiacciare l'individuo ribelle",
+  "Una progressiva conquista della libertà individuale, dei diritti di proprietà e dello Stato di diritto",
+  "Una lunga caduta: dalla vita autentica dei cacciatori-raccoglitori all'orrore industriale e digitale",
+  "Un lungo oblio del sacro e della magia: siamo qui per onorare nuovamente la Terra e i suoi spiriti"
+]},
+{q:"Che cosa pensi del femminismo?",o:[
+  "È parte fondamentale della lotta anarchica: transfemminismo, intersezionalità, convergenza delle lotte",
+  "Il femminismo smonta gerarchie artificiali e avvicina la società al suo funzionamento più naturale",
+  "Ogni individuo si definisce come vuole: il genere e il corpo sono una questione strettamente personale",
+  "Le donne sono individui liberi che fanno le proprie scelte: lo Stato non deve interferire né normarle",
+  "Molte comunità pre-civilizzazione avevano strutture più egalitarie o matriarcali della civiltà patriarcale",
+  "Il femminismo spirituale, il recupero del divino femminino e delle dee, è al centro di tutto"
+]},
+{q:"Che relazione hai con gli animali?",o:[
+  "La liberazione animale fa parte della lotta contro lo sfruttamento e la mercificazione capitalistica",
+  "Gli animali sono nodi della rete ecologica: rispettarli significa rispettare la complessità del vivente",
+  "Ho il mio rapporto personale con gli animali: faccio le mie scelte etiche senza delegarle a un'ideologia",
+  "La proprietà degli animali è un diritto individuale: il benessere animale lo gestisce il mercato",
+  "Viviamo con gli animali come parte della rete ecologica: caccia e pesca con rispetto e consapevolezza",
+  "Gli animali sono fratelli spirituali, guide, alleati: li onoro come portatori di saggezza e di vita"
+]},
+{q:"Come concepisci la libertà?",o:[
+  "Come liberazione collettiva dall'oppressione di classe, razza, genere: un progetto sempre incompiuto",
+  "Come massima capacità relazionale del sistema: più rete orizzontale, più libertà reale per tutti",
+  "Come assoluta autonomia individuale: non dover rendere conto a nessuno delle proprie scelte",
+  "Come inviolabilità della proprietà privata e libertà di contratto tra individui adulti e consenzienti",
+  "Come vita non alienata, in accordo con i ritmi naturali, fuori dalla civiltà industriale e digitale",
+  "Come allineamento interiore con le forze della natura e della propria anima più profonda"
+]},
+{q:"Che cosa è la rivoluzione per te?",o:[
+  "Processo collettivo di costruzione di nuove istituzioni mentre si smantellano le vecchie",
+  "Un cambiamento di fase del sistema: una biforcazione verso configurazioni più libere e complesse",
+  "Rivolta individuale permanente contro qualsiasi autorità che cerchi di dominarmi e definirmi",
+  "L'abolizione definitiva dello Stato e l'instaurazione del libero mercato assoluto senza coercizione",
+  "Abbandono: lasciare la civiltà malata e costruire comunità selvagge e autonome ai suoi margini",
+  "Trasformazione interiore e collettiva: la rivoluzione dell'anima viene prima di quella delle strutture"
+]},
+{q:"Che posto ha la cura nella tua visione del mondo?",o:[
+  "La cura è lavoro politico: va socializzata, riconosciuta e organizzata collettivamente",
+  "La cura è la struttura fondamentale della rete relazionale: il valore sistemico più sottovalutato",
+  "Mi prendo cura di me anzitutto: aiuto gli altri per scelta libera, non per obbligo morale o sociale",
+  "È un servizio che il mercato organizza meglio dello Stato assistenzialista, lasciando libertà di scelta",
+  "Pratica comunitaria quotidiana, come nelle comunità ancestrali: ci si prende cura l'uno dell'altro",
+  "Atto sacro: guarire con le mani, con le erbe, con la presenza spirituale e con il silenzio"
+]},
+{q:"Qual è il tuo rapporto con il territorio e gli spazi che abiti?",o:[
+  "Occupiamo spazi, costruiamo centri sociali, resistiamo alla speculazione e alla gentrificazione",
+  "Il territorio è una rete: riqualifichiamo con pratiche emergenti e autogestite dal basso",
+  "Mi muovo nel territorio come un lupo: non rivendico nulla di collettivo, solo il mio spazio personale",
+  "La proprietà privata del suolo è il fondamento: chi possiede la terra decide cosa farne liberamente",
+  "Cerco terre selvagge, foreste, spazi non ancora colonizzati dall'industria e dalla speculazione",
+  "Ogni luogo ha la sua energia e i suoi spiriti: mi relaziono con il territorio attraverso la percezione"
+]},
+{q:"Come stai rispetto alla morte e al lutto?",o:[
+  "La morte è elaborata collettivamente nella comunità di lotta: ognuno porta il lutto di tutti",
+  "La morte è una transizione di stato nel sistema: parte del divenire relazionale di ogni essere",
+  "Affronto la morte a modo mio: non ho bisogno di rituali imposti da altri né di consolazioni collettive",
+  "Ognuno gestisce la morte e il lutto come vuole: no alle imposizioni statali sui testamenti e sulle eredità",
+  "I riti funebri ancestrali avevano una dignità e un radicamento nel ciclo naturale che abbiamo perduto",
+  "La morte è un passaggio: gli antenati restano presenti come spiriti guida nella vita comunitaria"
+]},
+{q:"Qual è il tuo rapporto con la salute e la medicina?",o:[
+  "Salute come diritto collettivo: cliniche autogestite, mutualismo sanitario, lotta contro Big Pharma",
+  "La salute è un sistema complesso: integro medicina convenzionale e approcci alternativi con criterio",
+  "Gestisco la mia salute come credo: le mie scelte mediche non riguardano nessuno al di fuori di me",
+  "La medicina privata di mercato produce innovazione migliore: fuori lo Stato dalla sanità",
+  "La medicina ancestrale, le erbe, la vita all'aperto curano spesso meglio della farmacologia industriale",
+  "Guarigione spirituale, erboristeria sacra, pratiche sciamaniche: il corpo risponde all'anima"
+]},
+{q:"Intelligenza artificiale e automazione: come ti collocano?",o:[
+  "Vanno controllate collettivamente dai lavoratori, non lasciate al profitto aziendale o statale",
+  "Sono emergenza evolutiva dei sistemi complessi: da guidare verso configurazioni più libere per tutti",
+  "Utili se mi aiutano a fare ciò che voglio senza rendermi dipendente da strutture esterne",
+  "Il mercato libero produrrà la migliore AI possibile: la regolamentazione statale la soffoca",
+  "Espressione massima del dominio tecnologico sulla vita: un passo in più verso la schiavitù digitale",
+  "Intelligenza senz'anima: una mimesi vuota di ciò che è davvero vivo, misterioso e irriducibile"
+]},
+{q:"Come stai rispetto all'internazionalismo e al cosmopolitismo?",o:[
+  "Internazionalismo di lotta: solidarietà tra oppressi oltre ogni frontiera, contro ogni nazionalismo",
+  "Cosmopolitismo radicale: la rete delle relazioni non ha confini naturali, solo costruzioni di potere",
+  "Non mi interessa la scala: le mie alleanze sono scelte personali, non ideologiche né geografiche",
+  "Libertà di movimento come libertà di mercato: le frontiere sono imposizioni statali da abbattere",
+  "Localismo radicale: mi radico nel territorio specifico, nella bioregione, nella comunità concreta",
+  "La solidarietà spirituale attraversa tutti i confini: gli spiriti non hanno passaporto né nazione"
+]},
+{q:"Che rapporto hai con la storia dell'anarchismo?",o:[
+  "Mi nutro delle tradizioni di Bakunin, Kropotkin, Emma Goldman, della CNT, di Makhno",
+  "La storia dell'anarchismo è una delle riflessioni pratiche sull'autoorganizzazione dei sistemi complessi",
+  "La mia storia è personale: mi interessa Stirner, il nichilismo russo, il rifiuto di ogni tradizione",
+  "Rothbard, Spooner, Lysander: la tradizione anarco-capitalista è la più coerente con la libertà",
+  "Kaczynski, Zerzan, Watson: la critica alla civiltà industriale è l'anarchismo più onesto e radicale",
+  "La tradizione di Leo Tolstoj, degli anarchici cristiani, dei movimenti spirituali anti-istituzione"
+]},
+{q:"Come riesci a stare nel mondo così com'è oggi?",o:[
+  "Costruendo spazi e reti alternativi mentre continuo a resistere contro il potere",
+  "Osservando i sistemi con attenzione critica e cercando le biforcazioni possibili verso qualcosa di meglio",
+  "Vivendo il più possibile secondo le mie regole, minimo compromesso con le istituzioni",
+  "Cercando di ridurre al massimo il prelievo coercitivo dello Stato sulla mia vita e proprietà",
+  "Riducendo la mia impronta nella civiltà industriale e cercando comunità più autentiche",
+  "Praticando la cura, il rito, la presenza: anche nella sofferenza c'è qualcosa di sacro da onorare"
+]},
+{q:"Cosa ti fa sentire davvero anarchico/a?",o:[
+  "Costruire con altri qualcosa che sfida il potere e prefigura concretamente un mondo più giusto",
+  "Pensare e vivere fuori dalle gerarchie imposte, con coerenza intellettuale e pratica",
+  "Non dover rispondere a nessuno delle mie scelte né giustificare la mia esistenza ad altri",
+  "Non dover pagare tasse né subire regolamentazioni su ciò che è frutto del mio lavoro",
+  "Sentirmi vivo nella natura, fuori dal rumore della civiltà, in accordo con la terra e i suoi ritmi",
+  "Sentire la connessione con tutto ciò che è vivo, con gli spiriti, con la propria anima più profonda"
+]}
+];
+
+/* ================================================================
+   STATE
+   ================================================================ */
+let order=[], answers=[], cur=0;
+
+function shuffle(arr){
+  const a=arr.slice();
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+function buildOrder(){
+  order=QUESTIONS.map(q=>{const opts=CATS.map((c,i)=>({c,t:q.o[i]}));return shuffle(opts);});
+  answers=new Array(QUESTIONS.length).fill(null);
+}
+function startQuiz(){
+  buildOrder();cur=0;
+  document.getElementById('screen-intro').classList.add('hidden');
+  document.getElementById('screen-quiz').classList.remove('hidden');
+  renderQuestion();
+}
+function renderQuestion(){
+  const opts=order[cur];
+  document.getElementById('qtext').textContent=QUESTIONS[cur].q;
+  document.getElementById('qnum').textContent=String(cur+1).padStart(2,'0');
+  document.getElementById('progress-label').textContent=String(cur+1).padStart(2,'0')+' / '+QUESTIONS.length;
+  document.getElementById('backBtn').style.visibility=cur===0?'hidden':'visible';
+  const ticket=document.getElementById('ticket');
+  ticket.innerHTML='';
+  for(let i=0;i<QUESTIONS.length;i++){
+    const t=document.createElement('div');
+    t.className='tick'+(i<=cur?' filled':'');
+    ticket.appendChild(t);
+  }
+  const optsEl=document.getElementById('opts');
+  optsEl.innerHTML='';
+  const chosen=answers[cur];
+  opts.forEach((o,idx)=>{
+    const btn=document.createElement('button');
+    btn.className='opt'+(chosen===o.c?' selected':'');
+    btn.innerHTML='<span class="opt-idx">'+(idx+1)+'</span><span>'+o.t+'</span>';
+    btn.onclick=()=>selectOption(o.c);
+    optsEl.appendChild(btn);
+  });
+  const card=document.getElementById('qcard');
+  card.classList.remove('fade-in');void card.offsetWidth;card.classList.add('fade-in');
+}
+function selectOption(cat){
+  answers[cur]=cat;
+  renderQuestion();
+  setTimeout(()=>{
+    if(cur<QUESTIONS.length-1){cur++;renderQuestion();}
+    else{showResults();}
+  },320);
+}
+function goBack(){if(cur>0){cur--;renderQuestion();}}
+function computeTotals(){
+  const totals={};CATS.forEach(c=>totals[c]=0);
+  answers.forEach(ansCat=>{
+    if(!ansCat)return;
+    const row=MATRIX[CATS.indexOf(ansCat)];
+    CATS.forEach((c,i)=>totals[c]+=row[i]);
+  });
+  return totals;
+}
+function normIndex(score){
+  const n=Math.round(((score+(QUESTIONS.length*MAXPOINT))/(QUESTIONS.length*2*MAXPOINT))*100);
+  return Math.max(0,Math.min(100,n));
+}
+function showResults(){
+  document.getElementById('screen-quiz').classList.add('hidden');
+  document.getElementById('screen-results').classList.remove('hidden');
+  const totals=computeTotals();
+  const ranked=CATS.slice().sort((a,b)=>totals[b]-totals[a]);
+  const top=ranked[0];
+  const info=CAT_INFO[top];
+  document.getElementById('result-hero').innerHTML=`
+    <div class="stamp-wrap">${makeStamp(top)}</div>
+    <div class="result-name">${info.name}</div>
+    <div class="result-tagline">${info.tagline}</div>
+    <p class="result-desc">${info.desc}</p>`;
+  const list=document.getElementById('bars-list');
+  list.innerHTML='';
+  ranked.forEach(c=>{
+    const idx=normIndex(totals[c]);
+    const det=document.createElement('details');
+    det.className='bar-row';
+    det.innerHTML=`<summary>
+      <div class="bar-top"><span>${CAT_INFO[c].name}</span><span>${idx}</span></div>
+      <div class="bar-track"><div class="bar-fill" style="width:${idx}%;"></div></div>
+    </summary>
+    <div class="bar-desc">${CAT_INFO[c].desc}</div>`;
+    list.appendChild(det);
+  });
+}
+function makeStamp(cat){
+  const info=CAT_INFO[cat];
+  const rot={AC:-3,AF:2,AI:-2,AK:3,AP:-4,AS:1}[cat];
+  const label=('• '+info.name.toUpperCase()+' ').repeat(3);
+  return `<svg width="178" height="178" viewBox="0 0 200 200" style="transform:rotate(${rot}deg);">
+    <defs><path id="cp-${cat}" d="M 100,100 m -78,0 a 78,78 0 1,1 156,0 a 78,78 0 1,1 -156,0"/></defs>
+    <circle cx="100" cy="100" r="94" fill="none" stroke="var(--red)" stroke-width="2.5"/>
+    <circle cx="100" cy="100" r="68" fill="none" stroke="var(--red)" stroke-width="1.5"/>
+    <text font-family="IBM Plex Mono" font-size="9.5" letter-spacing="2" fill="var(--red)">
+      <textPath href="#cp-${cat}" startOffset="0%">${label}</textPath>
+    </text>
+    <g transform="translate(50,46)">${ICONS[cat]}</g>
+  </svg>`;
+}
+function restartQuiz(){
+  document.getElementById('screen-results').classList.add('hidden');
+  document.getElementById('screen-intro').classList.remove('hidden');
+}
+</script>
+</body>
+</html>
